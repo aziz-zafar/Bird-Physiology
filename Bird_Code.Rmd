@@ -203,8 +203,10 @@ minSouthData = read.csv("FinalSouthMinTemp.csv")
 UCT = maxNorthData$UCT
 LCT = maxNorthData$LCT
 Body_mass_g = maxNorthData$Body.mass..g.
+Order = maxNorthData$Order
 
-North_Diff = maxNorthData %>% dplyr::select(Bird) %>% add_column(Body_mass_g)
+North_Diff = maxNorthData %>% dplyr::select(Bird) %>% add_column(Body_mass_g)%>%
+  add_column(Order)
 South_Diff = North_Diff
 for (year in c(".15", ".16",".17", ".18", ".19")){
   North_Diff = find_diff(North_Diff, year = year, pole = "North")
@@ -228,11 +230,16 @@ South_Lifespan = South_Diff
 #         South_Days$Avg_Diff.18,
 #         South_Days$Avg_Diff.19, names = c("2015", "2016", "2017", "2018",
 #                                                     "2019"))
+colnames(North_Diff) = str_replace(colnames(North_Diff), "Avg_Diff.", "20")
+colnames(South_Diff) = str_replace(colnames(South_Diff), "Avg_Diff.", "20")
 
-North_Diff= North_Diff %>% pivot_longer(!c(Bird, Body_mass_g), names_to = "Year",
+North_Diff= North_Diff %>% pivot_longer(!c(Bird, Body_mass_g, Order),
+                                        names_to = "Year",
                                         values_to = "Avg_Difference")
-South_Diff = South_Diff %>% pivot_longer(!c(Bird, Body_mass_g), names_to = "Year",
+South_Diff = South_Diff %>% pivot_longer(!c(Bird, Body_mass_g,Order),
+                                         names_to = "Year",
                                         values_to = "Avg_Difference")
+
 ##### Normality Checks
 # North_Diff = North_Diff %>% mutate(LogDiff = log(Avg_Difference +5))
 # South_Diff = South_Diff %>% mutate(LogDiff = log(Avg_Difference +14))
@@ -248,68 +255,71 @@ South_Diff = South_Diff %>% pivot_longer(!c(Bird, Body_mass_g), names_to = "Year
 #   facet_wrap(~Year)
 # g2
 
-print('Normality Assumption')
-hist(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.15"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2015, North", xlab = "Average Difference")
-curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.15"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.15"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.15"])
 
-hist(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.16"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2016, North", xlab = "Average Difference")
-curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.16"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.16"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.16"])
+##### 
+# print('Normality Assumption')
+# hist(North_Diff$Avg_Difference[North_Diff$Year == "2015"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2015, North", xlab = "Average Difference")
+# curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "2015"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "2015"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "2015"])
+# 
+# hist(North_Diff$Avg_Difference[North_Diff$Year == "2016"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2016, North", xlab = "Average Difference")
+# curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "2016"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "2016"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "2016"])
+# 
+# hist(North_Diff$Avg_Difference[North_Diff$Year == "2017"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2017, North", xlab = "Average Difference")
+# curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "2017"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "2017"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "2017"])
+# 
+# hist(North_Diff$Avg_Difference[North_Diff$Year == "2018"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2018, North", xlab = "Average Difference")
+# curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "2018"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "2018"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "2018"])
+# 
+# hist(North_Diff$Avg_Difference[North_Diff$Year == "2019"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2019, North", xlab = "Average Difference")
+# curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "2019"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "2019"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "2019"])
+# 
+# #Now South
+# hist(South_Diff$Avg_Difference[South_Diff$Year == "2015"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2015, South", xlab = "Average Difference")
+# curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "2015"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "2015"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "2015"])
+# 
+# hist(South_Diff$Avg_Difference[South_Diff$Year == "2016"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2016, South", xlab = "Average Difference")
+# curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "2016"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "2016"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "2016"])
+# 
+# hist(South_Diff$Avg_Difference[South_Diff$Year == "2017"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2017, South", xlab = "Average Difference")
+# curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "2017"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "2017"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "2017"])
+# 
+# hist(South_Diff$Avg_Difference[South_Diff$Year == "2018"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2018, South", xlab = "Average Difference")
+# curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "2018"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "2018"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "2018"])
+# 
+# hist(South_Diff$Avg_Difference[South_Diff$Year == "2019"], freq =F, ylim = c(0,0.10),
+#      main = "Histogram for 2019, South", xlab = "Average Difference")
+# curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "2019"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "2019"])), 0,
+#       30, add=TRUE,col="red")
+# shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "2019"])
 
-hist(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.17"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2017, North", xlab = "Average Difference")
-curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.17"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.17"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.17"])
-
-hist(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.18"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2018, North", xlab = "Average Difference")
-curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.18"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.18"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.18"])
-
-hist(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.19"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2019, North", xlab = "Average Difference")
-curve(dnorm(x,mean(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.19"]), sd(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.19"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.19"])
-
-#Now South
-hist(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.15"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2015, South", xlab = "Average Difference")
-curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.15"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.15"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.15"])
-
-hist(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.16"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2016, South", xlab = "Average Difference")
-curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.16"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.16"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.16"])
-
-hist(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.17"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2017, South", xlab = "Average Difference")
-curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.17"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.17"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.17"])
-
-hist(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.18"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2018, South", xlab = "Average Difference")
-curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.18"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.18"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.18"])
-
-hist(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.19"], freq =F, ylim = c(0,0.10),
-     main = "Histogram for 2019, South", xlab = "Average Difference")
-curve(dnorm(x,mean(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.19"]), sd(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.19"])), 0,
-      30, add=TRUE,col="red")
-shapiro.test(South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.19"])
-
+#####
 ##### Parametric Tests
 print("Parametric Tests")
 ez1 = ezANOVA(data = North_Diff, dv = .(Avg_Difference), wid = .(Bird),
@@ -317,14 +327,19 @@ ez1 = ezANOVA(data = North_Diff, dv = .(Avg_Difference), wid = .(Bird),
 ez1$ANOVA
 ez1$`Mauchly's Test for Sphericity`
 ez1$`Sphericity Corrections`
-pairwise.t.test(North_Diff$Avg_Difference, North_Diff$Year, paired =T, p.adjust.method = "BH")
+print("Sphericity assumption not met. Adjusted p-value is 2.73e-11. Repeated
+      Measures ANOVA")
+pairwise.t.test(North_Diff$Avg_Difference, North_Diff$Year, paired =T, p.adjust.method = "BH",
+                alternative = "greater")
 
 ez2 = ezANOVA(data = South_Diff, dv = .(Avg_Difference), wid = .(Bird),
               within = .(Year))
 ez2$ANOVA
 ez2$`Mauchly's Test for Sphericity`
 ez2$`Sphericity Corrections`
-pairwise.t.test(South_Diff$Avg_Difference, South_Diff$Year, paired =T, p.adjust.method = "BH")
+print("p-value here is 3.47e-5")
+pairwise.t.test(South_Diff$Avg_Difference, South_Diff$Year, paired =T, p.adjust.method = "BH",
+                alternative = "greater")
 
 ##### Non-paramteric (Similar conclusion!)
 print("Non Parametric Alternatives")
@@ -337,34 +352,87 @@ posthoc.friedman.nemenyi.test(Avg_Difference ~ Year | Bird, data = South_Diff)
 
 ##### Boxplots
 
-box.North = ggplot(data = North_Diff, mapping = aes(y = Avg_Difference, x = Year))+
-  geom_boxplot()+ggtitle("North")
-box.North
+# box.North = ggplot(data = North_Diff, mapping = aes(y = Avg_Difference, x = Year))+
+#   geom_boxplot()+ggtitle("North")
+# box.North
+# 
+# box.South = ggplot(data = South_Diff, mapping = aes(y = Avg_Difference, x = Year))+
+#   geom_boxplot() +ggtitle("South")
+# box.South
+# 
+# ##### Bar Plots
+# summary.North = summarize(group_by(North_Diff, Year), MeanAvg_Difference = mean(Avg_Difference),
+#                           SE = sd(Avg_Difference)/sqrt(length(Avg_Difference)))
+# summary.South = summarize(group_by(South_Diff, Year), MeanAvg_Difference = mean(Avg_Difference),
+#                           SE = sd(Avg_Difference)/sqrt(length(Avg_Difference)))
+# 
+# print("Barplots")
+# bar.North = ggplot(summary.North, aes(x =Year, MeanAvg_Difference)) +
+#   geom_col() + geom_bar(stat = "identity", color = 'black', fill = 'grey')+
+#   geom_errorbar(aes(ymin = MeanAvg_Difference - SE, ymax = MeanAvg_Difference +SE), width=0.2) +
+#     labs(y="Average Difference")+
+#   scale_x_discrete(labels= c("2015", "2016", "2017","2018", "2019")) + theme_classic() + geom_hline(yintercept =0)+ggtitle("North")
+# bar.North
+# 
+# bar.South = ggplot(summary.South, aes(x =Year, MeanAvg_Difference)) +
+#   geom_col() + geom_bar(stat = "identity", color = 'black', fill = 'grey')+
+#   geom_errorbar(aes(ymin = MeanAvg_Difference - SE, ymax = MeanAvg_Difference +SE), width=0.2) +
+#     labs(y="Average Difference")+
+#   scale_x_discrete(labels= c("2015", "2016", "2017","2018", "2019")) + theme_classic() + geom_hline(yintercept =0) +ggtitle("South")
+# bar.South
 
-box.South = ggplot(data = South_Diff, mapping = aes(y = Avg_Difference, x = Year))+
-  geom_boxplot() +ggtitle("South")
-box.South
 
-##### Bar Plots
-summary.North = summarize(group_by(North_Diff, Year), MeanAvg_Difference = mean(log(Avg_Difference)),
-                          SE = sd(Avg_Difference)/sqrt(length(Avg_Difference)))
-summary.South = summarize(group_by(South_Diff, Year), MeanAvg_Difference = mean(Avg_Difference),
-                          SE = sd(Avg_Difference)/sqrt(length(Avg_Difference)))
+##### Confidence Intervals
+print("2 Standard errors, comparing year to year differences")
+North_Diff_wide= North_Diff %>% pivot_wider(names_from = "Year",
+                                        values_from = "Avg_Difference")
+South_Diff_wide= South_Diff %>% pivot_wider(names_from = "Year",
+                                        values_from = "Avg_Difference")
+
+m = data.frame(combn(colnames(North_Diff_wide[3:7]),2), stringsAsFactors = F)
+df1 = data.frame(lapply(m, function(x) North_Diff_wide[[x[2]]] - North_Diff_wide[[x[1]]]))
+colnames(df1) = lapply(m, function(x) paste(x[2], x[1], sep="-"))
+North_Diff_wide = df1
+
+m = data.frame(combn(colnames(South_Diff_wide[3:7]),2), stringsAsFactors = F)
+df1 = data.frame(lapply(m, function(x) South_Diff_wide[[x[2]]] - South_Diff_wide[[x[1]]]))
+colnames(df1) = lapply(m, function(x) paste(x[2], x[1], sep="-"))
+South_Diff_wide = df1
+
+North_Diff_wide = North_Diff_wide %>% pivot_longer(cols = everything(), names_to = "Year",
+                                        values_to = "Difference")
+
+South_Diff_wide = South_Diff_wide %>% pivot_longer(cols = everything(),names_to = "Year",
+                                        values_to = "Difference")
+
+
+summary.North = summarize(group_by(North_Diff_wide, Year), Mean = mean(Difference),
+                          SE = 2* sd(Difference)/sqrt(length(Difference)))
+summary.South = summarize(group_by(South_Diff_wide, Year), Mean = mean(Difference),
+                          SE = 2* sd(Difference)/sqrt(length(Difference)))
 
 print("Barplots")
-bar.North = ggplot(summary.North, aes(x =Year, MeanAvg_Difference)) +
+bar.North = ggplot(summary.North, aes(x =as.factor(Year), Mean)) +
   geom_col() + geom_bar(stat = "identity", color = 'black', fill = 'grey')+
-  geom_errorbar(aes(ymin = MeanAvg_Difference - SE, ymax = MeanAvg_Difference +SE), width=0.2) +
-    labs(y="Average Difference")+
-  scale_x_discrete(labels= c("2015", "2016", "2017","2018", "2019")) + theme_classic() + geom_hline(yintercept =0)+ggtitle("North")
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean +SE), width=0.2) +
+    labs(y="Average Difference", x = "Year to Year")+ theme_classic()+
+  geom_hline(yintercept =0)+ggtitle("North")+
+  theme(text = element_text(size=8))
+tiff(filename = "North_Pairwise.tiff",width = 6, height = 6, units = 'in', res = 300, compression = 'lzw')
 bar.North
+dev.off()
 
-bar.South = ggplot(summary.South, aes(x =Year, MeanAvg_Difference)) +
+
+bar.South = ggplot(summary.South, aes(x =as.factor(Year), Mean)) +
   geom_col() + geom_bar(stat = "identity", color = 'black', fill = 'grey')+
-  geom_errorbar(aes(ymin = MeanAvg_Difference - SE, ymax = MeanAvg_Difference +SE), width=0.2) +
-    labs(y="Average Difference")+
-  scale_x_discrete(labels= c("2015", "2016", "2017","2018", "2019")) + theme_classic() + geom_hline(yintercept =0) +ggtitle("South")
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean +SE), width=0.2) +
+    labs(y="Average Difference", x= "Year to Year")+ theme_classic() + 
+  geom_hline(yintercept =0) +ggtitle("South")+
+  theme(text = element_text(size=8))
+tiff(filename = "South_Pairwise.tiff",width = 6, height = 6, units = 'in', res = 300, compression = 'lzw')
 bar.South
+dev.off()
+
 ##### Some models
 
 # lm1 = lmerTest::lmer(Avg_Difference ~  Year + (1 | Bird), data = North_Diff)
@@ -389,6 +457,29 @@ lm3 = lmerTest::lmer(Avg_Difference ~ log(Body_mass_g)  + (1 | Year),
 summary(lm3)
 qqnorm(resid(lm3))
 qqline(resid(lm3))
+
+North_Diff = North_Diff %>% mutate(Order = if_else(Order == "Passeriformes",
+                                                      "Passeriformes",
+                                                      "Non-Passeriformes"))
+South_Diff = South_Diff %>% mutate(Order = if_else(Order == "Passeriformes",
+                                                      "Passeriformes",
+                                                      "Non-Passeriformes"))
+
+sink(file = "Order_test.txt")
+
+print("Difference between orders for North (taking into account Year)")
+lm4 = lmerTest::lmer(Avg_Difference ~ Order + (1|Year), data = North_Diff)
+summary(lm4)
+
+print("In the North, Passeriformes are being more affected by the temperature changes")
+
+print("Difference between orders for South (taking into account Year)")
+lm5 = lmerTest::lmer(Avg_Difference ~ Order + (1|Year), data = South_Diff)
+summary(lm5)
+
+print("In the South, Passeriformes are not significantly more or less affected by the temperature changes. There is not enough evidence to reject the null hypothesis")
+
+sink()
 ```
 
 ```{r Lifespan Analysis, echo =F}
@@ -418,6 +509,7 @@ summary(lm2)
 plot(lm2)
 qqnorm(resid(lm2))
 qqline(resid(lm2))
+hist(resid(lm2))
 
 lm3= lmerTest::lmer(Avg_Difference ~ log(Lifespan)  + (1 | Year),
                      data = South_Lifespan)
@@ -434,11 +526,11 @@ find_project_diff = function(data, year, pole){
     min_year = Project_minNorth %>% dplyr::select(ends_with(".19"))
     if (year == ".30"){
       max_year = max_year + 1.5
-      min_year = min_year + 1.5
+      min_year = min_year
     }
     else if(year == ".50"){
       max_year = max_year + 3
-      min_year = min_year + 3
+      min_year = min_year
     }
     Avg_Diff = rep(NA, nrow(data))
     for (row in 1:nrow(data)){
@@ -467,11 +559,11 @@ find_project_diff = function(data, year, pole){
     min_year = Project_minSouth %>% dplyr::select(ends_with(".19"))
     if (year == ".30"){
       max_year = max_year + 1.5
-      min_year = min_year + 1.5
+      min_year = min_year 
     }
     else if(year == ".50"){
       max_year = max_year + 3
-      min_year = min_year + 3
+      min_year = min_year
     }
     Avg_Diff = rep(NA, nrow(data))
     for (row in 1:nrow(data)){
@@ -529,8 +621,51 @@ for (year in c(".19",".30", ".50")){
   South_Proj_Diff = find_project_diff(South_Proj_Diff, year = year, pole = "South")
 }
 
-hist(North_Proj_Diff$Avg_Diff.30 - North_Proj_Diff$Avg_Diff.19)
-hist(North_Proj_Diff$Avg_Diff.50 - North_Proj_Diff$Avg_Diff.19)
+colnames(North_Proj_Diff) = str_replace(colnames(North_Proj_Diff), "Avg_Diff.", "20")
+colnames(South_Proj_Diff) = str_replace(colnames(South_Proj_Diff), "Avg_Diff.", "20")
+
+m = data.frame(combn(colnames(North_Proj_Diff[2:4]),2), stringsAsFactors = F)
+df1 = data.frame(lapply(m, function(x) North_Proj_Diff[[x[2]]] - North_Proj_Diff[[x[1]]]))
+colnames(df1) = lapply(m, function(x) paste(x[2], x[1], sep="-"))
+North_Proj_Diff = df1
+
+m = data.frame(combn(colnames(South_Proj_Diff[2:4]),2), stringsAsFactors = F)
+df1 = data.frame(lapply(m, function(x) South_Proj_Diff[[x[2]]] - South_Proj_Diff[[x[1]]]))
+colnames(df1) = lapply(m, function(x) paste(x[2], x[1], sep="-"))
+South_Proj_Diff = df1
+
+North_Proj_Diff = North_Proj_Diff%>% pivot_longer(cols = everything(), names_to = "Year",
+                                        values_to = "Difference")
+
+South_Proj_Diff = South_Proj_Diff %>% pivot_longer(cols = everything(),names_to = "Year",
+                                        values_to = "Difference")
+
+
+summary.North = summarize(group_by(North_Proj_Diff, Year), Mean = mean(Difference),
+                          SE = 2* sd(Difference)/sqrt(length(Difference)))
+summary.South = summarize(group_by(South_Proj_Diff, Year), Mean = mean(Difference),
+                          SE = 2* sd(Difference)/sqrt(length(Difference)))
+
+print("Barplots")
+bar.North = ggplot(summary.North, aes(x =Year, Mean)) +
+  geom_col() + geom_bar(stat = "identity", color = 'black', fill = 'grey')+
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean +SE), width=0.2) +
+    labs(y="Average Difference", x = "Year to Year")+ theme_classic()+
+  geom_hline(yintercept =0)+ggtitle("North, Projected")
+
+tiff(filename = "Projected_North.tiff",width = 4, height = 4, units = 'in', res = 300, compression = 'lzw')
+bar.North
+dev.off()
+bar.South = ggplot(summary.South, aes(x =Year, Mean)) +
+  geom_col() + geom_bar(stat = "identity", color = 'black', fill = 'grey')+
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean +SE), width=0.2) +
+    labs(y="Average Difference", x = "Year to Year")+ theme_classic() + 
+  geom_hline(yintercept =0) +ggtitle("South, Projected")
+tiff(filename = "Projected_South.tiff",width = 4, height = 4, units = 'in', res = 300, compression = 'lzw')
+bar.South
+dev.off()
+
+
 ```
 
 
@@ -839,7 +974,9 @@ print("Sorted by Mass")
 North_byMonth = cbind(North_byMonth,
                       Slopes =apply(X = North_byMonth, MARGIN= 1,
                                     FUN = find_slope))
+#write.csv(North_byMonth, file = "NorthSlopes.csv")
 North_byMonth = North_byMonth[base::order(North_byMonth["Slopes"]),]
+
 North_byMonth = North_byMonth[-61]
 heatmap(as.matrix(North_byMonth),
         Rowv = NA, Colv = NA,
@@ -850,6 +987,7 @@ print("Sorted by Slopes")
 South_byMonth = cbind(South_byMonth,
                       Slopes =apply(X = South_byMonth, MARGIN= 1,
                                     FUN = find_slope))
+#write.csv(South_byMonth, file = "SouthSlopes.csv")
 South_byMonth = South_byMonth[base::order(South_byMonth["Slopes"]),]
 South_byMonth = South_byMonth[-61]
 heatmap(as.matrix(South_byMonth), Rowv = NA, Colv=NA,
@@ -891,6 +1029,7 @@ heatmap(as.matrix(South_byYear), Rowv = NA, Colv=NA,
         xlab = "Year")
 print("Sorted by Mass")
 
+print("I would focus on these over other heatmaps, because they tell an important story!")
 ##### By Slopes
 North_byYear = cbind(North_byYear,
                       Slopes =apply(X = North_byYear, MARGIN= 1,
@@ -898,9 +1037,11 @@ North_byYear = cbind(North_byYear,
 North_byYear = North_byYear[base::order(North_byYear["Slopes"]),]
 North_byYear = North_byYear[-6]
 
+tiff(filename = "North_Heatmap.tiff",width = 8, height = 10, units = 'in', res = 300, compression = 'lzw')
 heatmap(as.matrix(North_byYear), Colv = NA, Rowv = NA,
         col = colorRampPalette(brewer.pal(8,"Blues"))(3), main = "North, Yearly",
-        xlab = "Year")
+        xlab = "Year", cexRow = 0.35)
+dev.off()
 print("")
 
 South_byYear = cbind(South_byYear,
@@ -908,32 +1049,36 @@ South_byYear = cbind(South_byYear,
                                     FUN = find_slope))
 South_byYear = South_byYear[base::order(South_byYear["Slopes"]),]
 South_byYear = South_byYear[-6]
+tiff(filename = "South_Heatmap.tiff",width = 8, height = 10, units = 'in', res = 300, compression = 'lzw')
 heatmap(as.matrix(South_byYear), Rowv =NA, Colv= NA,
-        col = colorRampPalette(brewer.pal(8,"Blues"))(5), main = "South, Yearly",
-        xlab = "Year")
+        col = colorRampPalette(brewer.pal(8,"Blues"))(3), main = "South, Yearly",
+        xlab = "Year", cexRow = 0.35)
+dev.off()
 
 ```
 
 ```{r Post-Hoc Analysis, echo = F} 
 print("2015")
-t.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.15"],
-       South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.15"], paired = T)
+t.test(North_Diff$Avg_Difference[North_Diff$Year == "2015"],
+       South_Diff$Avg_Difference[South_Diff$Year == "2015"], paired = T)
 
 print("2016")
-t.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.16"],
-       South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.16"], paired = T)
+t.test(North_Diff$Avg_Difference[North_Diff$Year == "2016"],
+       South_Diff$Avg_Difference[South_Diff$Year == "2016"], paired = T)
 
 print("2017")
-t.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.17"],
-       South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.17"], paired = T)
+t.test(North_Diff$Avg_Difference[North_Diff$Year == "2017"],
+       South_Diff$Avg_Difference[South_Diff$Year == "2017"], paired = T)
 
 print("2018")
-t.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.18"],
-       South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.18"], paired = T)
+t.test(North_Diff$Avg_Difference[North_Diff$Year == "2018"],
+       South_Diff$Avg_Difference[South_Diff$Year == "2018"], paired = T)
 
 print("2019")
-t.test(North_Diff$Avg_Difference[North_Diff$Year == "Avg_Diff.19"],
-       South_Diff$Avg_Difference[South_Diff$Year == "Avg_Diff.19"], paired = T)
+t.test(North_Diff$Avg_Difference[North_Diff$Year == "2019"],
+       South_Diff$Avg_Difference[South_Diff$Year == "2019"], paired = T)
+
+
 ```
 
 ```{r Phylogeny, echo =F}
@@ -941,5 +1086,7 @@ library(ape)
 tree = read.nexus("tree-pruner/output.nex")
 #plot(tree[[1]], cex = 0.4)
 
-plot(consensus(tree, p = 0.7), cex = 0.4)
+tiff(filename = "birdtree.tiff", width = 10, height = 10, units = "in", res = 300)
+plot(consensus(tree, p = 0.7), cex = 0.5)
+dev.off()
 ```
